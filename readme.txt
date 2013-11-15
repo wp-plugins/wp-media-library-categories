@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: jeffreywp
-Tags: category, categories, media, library
-Requires at least: 3.0.1
+Tags: category, categories, media, library, medialibrary
+Requires at least: 3.1
 Tested up to: 3.7.1
 Stable tag: 1.1
 License: GPLv2 or later
@@ -15,9 +15,25 @@ Adds the ability to use categories in the media library. When activated a dropdo
 
 == Installation ==
 
-1. Upload the mediacategory plugin
-2. Activate the plugin through the 'Plugins' menu in WordPress
+For an automatic installation through WordPress:
+
+1. Go to the 'Add New' plugins screen in your WordPress admin area
+2. Search for 'Media Library Categories'
+3. Click 'Install Now' and activate the plugin
+4. A dropdown of categories will show up in the media library
+
+
+For a manual installation via FTP:
+
+1. Upload the 'Media Library Categories' directory to the '/wp-content/plugins/' directory
+2. Activate the plugin through the 'Plugins' screen in your WordPress admin area
 3. A dropdown of categories will show up in the media library
+
+
+To upload the plugin through WordPress, instead of FTP:
+
+1. Upload the downloaded zip file on the 'Add New' plugins screen (see the 'Upload' tab) in your WordPress admin area and activate.
+2. A dropdown of categories will show up in the media library
 
 == Changelog ==
 
