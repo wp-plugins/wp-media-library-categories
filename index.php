@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.1
+ * Version: 1.2
  * Author: Jeffrey-WP
  */
 
@@ -17,7 +17,7 @@ add_action( 'init', 'wpmediacategory_init' );
 function wpmediacategory_add_category_filter() {
 	$screen = get_current_screen();
 	if ( 'upload' == $screen->id ) {
-		$dropdown_options = array( 'show_option_all' => __( 'View all categories', 'wpmediacategory' ), 'hide_empty' => false, 'hierarchical' => true, 'orderby' => 'name', );
+		$dropdown_options = array( 'show_option_all' => __( 'View all categories' ), 'hide_empty' => false, 'hierarchical' => true, 'orderby' => 'name', );
 		wp_dropdown_categories( $dropdown_options );
 	}
 }

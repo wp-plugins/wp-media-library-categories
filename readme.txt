@@ -1,9 +1,9 @@
 === Plugin Name ===
-Contributors: jeffreywp
+Contributors: jeffrey-wp
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.7.1
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,9 @@ To upload the plugin through WordPress, instead of FTP:
 2. A dropdown of categories will show up in the media library
 
 == Changelog ==
+
+= 1.2 =
+* Better internationalisation
 
 = 1.1 =
 * Add a link to media categories on the plugin page
