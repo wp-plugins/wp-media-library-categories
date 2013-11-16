@@ -35,6 +35,12 @@ To upload the plugin through WordPress, instead of FTP:
 1. Upload the downloaded zip file on the 'Add New' plugins screen (see the 'Upload' tab) in your WordPress admin area and activate.
 2. A dropdown of categories will show up in the media library
 
+== Screenshots ==
+
+1. Filter by category in the media library
+2. Manage categories in the media library
+
+
 == Changelog ==
 
 = 1.2 =
