@@ -2,8 +2,8 @@
 Contributors: jeffrey-wp
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
-Tested up to: 3.7.1
-Stable tag: 1.2
+Tested up to: 3.8
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,13 +35,22 @@ To upload the plugin through WordPress, instead of FTP:
 1. Upload the downloaded zip file on the 'Add New' plugins screen (see the 'Upload' tab) in your WordPress admin area and activate.
 2. A dropdown of categories will show up in the media library
 
+== Frequently Asked Questions ==
+
+= Where can I request new features? =
+
+You can request new features on the [support page](http://wordpress.org/support/plugin/wp-media-library-categories)
+
 == Screenshots ==
 
 1. Filter by category in the media library
 2. Manage categories in the media library
 
-
 == Changelog ==
+
+= 1.3 =
+* Add support for bulk actions (to change category from multiple media items at once)
+* support for WordPress 3.8
 
 = 1.2 =
 * Better internationalisation
