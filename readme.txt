@@ -3,7 +3,7 @@ Contributors: jeffrey-wp
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.8
-Stable tag: 1.3
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ You can request new features on the [support page](http://wordpress.org/support/
 2. Manage categories in the media library
 
 == Changelog ==
+
+= 1.3.1 =
+* fixed bug (when having a category with apostrophe)
 
 = 1.3 =
 * Add support for bulk actions (to change category from multiple media items at once)

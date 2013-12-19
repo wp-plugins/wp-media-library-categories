@@ -27,7 +27,6 @@ add_action( 'restrict_manage_posts', 'wpmediacategory_add_category_filter' );
 
 /** Add custom Bulk Action to the select menus */
 function wpmediacategory_custom_bulk_admin_footer() {
-	//$terms = get_the_terms( 0, 'category' );
 	$terms = get_terms( 'category', 'hide_empty=0' );
 	if ( $terms && ! is_wp_error( $terms ) ) :
 		?>
@@ -35,12 +34,12 @@ function wpmediacategory_custom_bulk_admin_footer() {
 		jQuery(document).ready(function() {
 		<?php
 		foreach ( $terms as $term ) {
-			echo 'jQuery(\'<option>\').val(\'cat_' . $term->term_taxonomy_id . '\').text(\''. __( 'Category' ) . ': ' . $term->name . '\').appendTo("select[name=\'action\']");';
-			echo 'jQuery(\'<option>\').val(\'cat_' . $term->term_taxonomy_id . '\').text(\''. __( 'Category' ) . ': ' . $term->name . '\').appendTo("select[name=\'action2\']");';
+			echo 'jQuery(\'<option>\').val(\'cat_' . $term->term_taxonomy_id . '\').text(\''. esc_js( __( 'Category' ) ) . ': ' . esc_js( $term->name ) . '\').appendTo("select[name=\'action\']");';
+			echo 'jQuery(\'<option>\').val(\'cat_' . $term->term_taxonomy_id . '\').text(\''. esc_js( __( 'Category' ) ) . ': ' . esc_js( $term->name ) . '\').appendTo("select[name=\'action2\']");';
 		}
 		?>
-			jQuery('<option>').val('cat_0').text('<?php _e( 'Category' ); ?> <?php echo strtolower(__( 'Remove' )); ?>').appendTo("select[name='action']");
-			jQuery('<option>').val('cat_0').text('<?php _e( 'Category' ); ?> <?php echo strtolower(__( 'Remove' )); ?>').appendTo("select[name='action2']");
+			jQuery('<option>').val('cat_0').text('<?php esc_js( _e( 'Category' ) ); ?> <?php echo esc_js( strtolower( __( 'Remove' ) ) ); ?>').appendTo("select[name='action']");
+			jQuery('<option>').val('cat_0').text('<?php esc_js( _e( 'Category' ) ); ?> <?php echo esc_js( strtolower( __( 'Remove' ) ) ); ?>').appendTo("select[name='action2']");
 		});
 		</script>
 		<?php
