@@ -1,5 +1,6 @@
 === Plugin Name ===
 Contributors: jeffrey-wp
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.8
@@ -40,6 +41,10 @@ To upload the plugin through WordPress, instead of FTP:
 = Where can I request new features? =
 
 You can request new features on the [support page](http://wordpress.org/support/plugin/wp-media-library-categories)
+
+= I want to thank you, where can I make a donation? =
+Maintaining a plugin and keeping it up to date is hard work. Please support me by making a donation. Thank you.
+[Donate link] (https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
 
 == Screenshots ==
 
