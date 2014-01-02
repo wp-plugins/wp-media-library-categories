@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.8
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,6 +13,7 @@ Adds the ability to use categories in the media library.
 == Description ==
 
 Adds the ability to use categories in the media library. When activated a dropdown of categories will show up in the media library.
+You can change the category of multiple items at once with bulk actions.
 
 == Installation ==
 
@@ -44,7 +45,7 @@ You can request new features on the [support page](http://wordpress.org/support/
 
 = I want to thank you, where can I make a donation? =
 Maintaining a plugin and keeping it up to date is hard work. Please support me by making a donation. Thank you.
-[Please donate here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
+[Donate link] (https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
 
 == Screenshots ==
 
@@ -52,6 +53,10 @@ Maintaining a plugin and keeping it up to date is hard work. Please support me b
 2. Manage categories in the media library
 
 == Changelog ==
+
+= 1.3.2 =
+* [added taxonomy filter](http://wordpress.org/support/topic/added-taxonomy-filter)
+* [don't load unnecessary code](http://dannyvankooten.com/3882/wordpress-plugin-structure-dont-load-unnecessary-code/)
 
 = 1.3.1 =
 * fixed bug (when having a category with apostrophe)
