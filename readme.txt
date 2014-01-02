@@ -45,7 +45,7 @@ You can request new features on the [support page](http://wordpress.org/support/
 
 = I want to thank you, where can I make a donation? =
 Maintaining a plugin and keeping it up to date is hard work. Please support me by making a donation. Thank you.
-[Donate link] (https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
+[Donate link](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
 
 == Screenshots ==
 
