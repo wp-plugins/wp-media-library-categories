@@ -3,7 +3,7 @@ Contributors: jeffrey-wp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
-Tested up to: 3.8
+Tested up to: 3.8.1
 Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,8 +12,7 @@ Adds the ability to use categories in the media library.
 
 == Description ==
 
-Adds the ability to use categories in the media library. When activated a dropdown of categories will show up in the media library.
-You can change the category of multiple items at once with bulk actions.
+Adds the ability to use categories in the WordPress Media Library. When activated a dropdown of categories will show up in the media library. You can change the category of multiple items at once with bulk actions.
 
 == Installation ==
 
