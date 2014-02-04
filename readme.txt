@@ -46,10 +46,15 @@ You can request new features on the [support page](http://wordpress.org/support/
 Maintaining a plugin and keeping it up to date is hard work. Please support me by making a donation. Thank you.
 [Please donate here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
 
+= How can I filter on categories when inserting media into a post or page? =
+This feature is only available in the [premium version](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
+
+
 == Screenshots ==
 
 1. Filter by category in the media library
 2. Manage categories in the media library
+3. Filter by category when inserting media [(premium version)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 == Changelog ==
 
