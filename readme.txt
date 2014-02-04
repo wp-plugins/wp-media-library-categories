@@ -3,7 +3,7 @@ Contributors: jeffrey-wp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
-Tested up to: 3.8
+Tested up to: 3.8.1
 Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,8 +12,7 @@ Adds the ability to use categories in the media library.
 
 == Description ==
 
-Adds the ability to use categories in the media library. When activated a dropdown of categories will show up in the media library.
-You can change the category of multiple items at once with bulk actions.
+Adds the ability to use categories in the WordPress Media Library. When activated a dropdown of categories will show up in the media library. You can change the category of multiple items at once with bulk actions.
 
 == Installation ==
 
@@ -47,10 +46,15 @@ You can request new features on the [support page](http://wordpress.org/support/
 Maintaining a plugin and keeping it up to date is hard work. Please support me by making a donation. Thank you.
 [Please donate here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
 
+= How can I filter on categories when inserting media into a post or page? =
+This feature is only available in the [premium version](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
+
+
 == Screenshots ==
 
 1. Filter by category in the media library
 2. Manage categories in the media library
+3. Filter by category when inserting media [(premium version)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 == Changelog ==
 
