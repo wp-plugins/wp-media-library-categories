@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.1
+ * Version: 1.4.4
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -14,12 +14,45 @@ function wpmediacategory_init() {
 	$taxonomy = 'category';
 	// Add filter to change the default taxonomy
 	$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
-	register_taxonomy_for_object_type( $taxonomy, 'attachment' );
+
+	$args = array(
+		'hierarchical' => true,  // hierarchical: true = display as categories, false = display as tags
+		'show_admin_column' => true
+	);
+	register_taxonomy( $taxonomy, array( 'attachment' ), $args );
 }
 add_action( 'init', 'wpmediacategory_init' );
 
 // load code that is only needed in the admin section
 if( is_admin() ) {
+
+	/** Custom walker for wp_dropdown_categories, based on https://gist.github.com/stephenh1988/2902509 */
+	class wpmediacategory_walker_category_filter extends Walker_CategoryDropdown{
+
+		function start_el(&$output, $category, $depth, $args) {
+			$pad = str_repeat('&nbsp;', $depth * 3);
+			$cat_name = apply_filters('list_cats', $category->name, $category);
+
+			if( !isset($args['value']) ) {
+				$args['value'] = ( $category->taxonomy != 'category' ? 'slug' : 'id' );
+			}
+
+			$value = ($args['value']=='slug' ? $category->slug : $category->term_id );
+
+			$output .= "\t<option class=\"level-$depth\" value=\"".$value."\"";
+			if ( $value === (string) $args['selected'] ) {
+				$output .= ' selected="selected"';
+			}
+			$output .= '>';
+			$output .= $pad.$cat_name;
+			if ( $args['show_count'] )
+				$output .= '&nbsp;&nbsp;('. $category->count .')';
+
+			$output .= "</option>\n";
+		}
+
+	}
+
 
 	/** Add a category filter */
 	function wpmediacategory_add_category_filter() {
@@ -29,7 +62,16 @@ if( is_admin() ) {
 			$taxonomy = 'category';
 			// Add filter to change the default taxonomy
 			$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
-			$dropdown_options = array( 'taxonomy' => $taxonomy, 'show_option_all' => __( 'View all categories' ), 'hide_empty' => false, 'hierarchical' => true, 'orderby' => 'name', );
+			$dropdown_options = array(
+				'taxonomy'        => $taxonomy,
+				'name'            => $taxonomy,
+				'show_option_all' => __( 'View all categories' ),
+				'hide_empty'      => false,
+				'hierarchical'    => true,
+				'orderby'         => 'name',
+				'walker'          => new wpmediacategory_walker_category_filter(),
+				'value'           => 'slug'
+			);
 			wp_dropdown_categories( $dropdown_options );
 		}
 	}

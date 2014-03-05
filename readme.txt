@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.8.1
-Stable tag: 1.4.1
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,7 +35,8 @@ For a manual installation via FTP:
 To upload the plugin through WordPress, instead of FTP:
 
 1. Upload the downloaded zip file on the 'Add New' plugins screen (see the 'Upload' tab) in your WordPress admin area and activate.
-2. A dropdown of categories will show up in the media library
+2. Activate the plugin through the 'Plugins' screen in your WordPress admin area
+3. A dropdown of categories will show up in the media library
 
 == Frequently Asked Questions ==
 
@@ -50,6 +51,16 @@ Maintaining a plugin and keeping it up to date is hard work. Please support me b
 = How can I filter on categories when inserting media into a post or page? =
 This feature is only available in the [premium version](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
+= By default the WordPress Media Library uses the same categories as throughout WordPress (such as posts & pages). How do I use separate categories for the WordPress Media Library? =
+Add this code to the file functions.php located in your theme or child-theme:
+`
+/**
+* separate media categories from post categories
+* use a custom category called 'category_media' for the categories in the media library
+*/
+add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 1 ); //requires PHP 5.3 or newer
+`
+
 == Screenshots ==
 
 1. Filter by category in the media library
@@ -58,12 +69,21 @@ This feature is only available in the [premium version](http://codecanyon.net/it
 
 == Changelog ==
 
+= 1.4.4 =
+* By default the WordPress Media Library uses the same categories as throughout WordPress (such as posts & pages). Now you can use separate categories for the WordPress Media Library. [see the faq for howto](http://wordpress.org/plugins/wp-media-library-categories/faq/)
+
+= 1.4.3 =
+* [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
+
+= 1.4.2 =
+* [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
+
 = 1.4.1 =
-* improved bulk actions: added option to remove category from multiple media items at once.
+* improved bulk actions: added option to remove category from multiple media items at once
 * improved bulk actions: arranged options in option group
 
 = 1.4 =
-* Filter on categories when inserting media [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
+* filter on categories when inserting media [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 = 1.3.2 =
 * [added taxonomy filter](http://wordpress.org/support/topic/added-taxonomy-filter)
@@ -73,14 +93,14 @@ This feature is only available in the [premium version](http://codecanyon.net/it
 * fixed bug (when having a category with apostrophe)
 
 = 1.3 =
-* Add support for bulk actions (to change category from multiple media items at once)
+* add support for bulk actions (to change category from multiple media items at once)
 * support for WordPress 3.8
 
 = 1.2 =
-* Better internationalisation
+* better internationalisation
 
 = 1.1 =
-* Add a link to media categories on the plugin page
+* add a link to media categories on the plugin page
 
 = 1.0 =
-* Initial release.
+* initial release.
