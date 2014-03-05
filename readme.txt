@@ -51,10 +51,9 @@ Maintaining a plugin and keeping it up to date is hard work. Please support me b
 = How can I filter on categories when inserting media into a post or page? =
 This feature is only available in the [premium version](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
-= By default the WordPress Media Library uses the same categories as throughout WordPress (such as posts & pages). How do I use separate categories for the WordPress Media Library? =
+= By default the WordPress Media Library uses the same categories as WordPress does (such as in posts & pages). How do I use separate categories for the WordPress Media Library? =
 Add this code to the file functions.php located in your theme or child-theme:
-`
-/**
+`/**
 * separate media categories from post categories
 * use a custom category called 'category_media' for the categories in the media library
 */
@@ -70,7 +69,7 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 == Changelog ==
 
 = 1.4.4 =
-* By default the WordPress Media Library uses the same categories as throughout WordPress (such as posts & pages). Now you can use separate categories for the WordPress Media Library. [see the faq for howto](http://wordpress.org/plugins/wp-media-library-categories/faq/)
+* By default the WordPress Media Library uses the same categories as WordPress does (such as posts & pages). Now you can use separate categories for the WordPress Media Library. [see the FAQ for howto](http://wordpress.org/plugins/wp-media-library-categories/faq/)
 
 = 1.4.3 =
 * [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
