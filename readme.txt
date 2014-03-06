@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.8.1
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,13 +68,13 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 
 == Changelog ==
 
+= 1.4.5 =
+* fixed bug in version 1.4.4 that made default categories in WordPress invisible
+
 = 1.4.4 =
 * By default the WordPress Media Library uses the same categories as WordPress does (such as posts & pages). Now you can use separate categories for the WordPress Media Library. [see the FAQ for howto](http://wordpress.org/plugins/wp-media-library-categories/faq/)
 
-= 1.4.3 =
-* [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
-
-= 1.4.2 =
+= 1.4.2 & 1.4.3 =
 * [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 = 1.4.1 =

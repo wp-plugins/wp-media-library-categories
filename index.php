@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.4
+ * Version: 1.4.5
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -15,11 +15,15 @@ function wpmediacategory_init() {
 	// Add filter to change the default taxonomy
 	$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
 
-	$args = array(
-		'hierarchical' => true,  // hierarchical: true = display as categories, false = display as tags
-		'show_admin_column' => true
-	);
-	register_taxonomy( $taxonomy, array( 'attachment' ), $args );
+	if ( $taxonomy != 'category' ) {
+		$args = array(
+			'hierarchical' => true,  // hierarchical: true = display as categories, false = display as tags
+			'show_admin_column' => true
+		);
+		register_taxonomy( $taxonomy, array( 'attachment' ), $args );
+	} else {
+		register_taxonomy_for_object_type( $taxonomy, 'attachment' );
+	}
 }
 add_action( 'init', 'wpmediacategory_init' );
 
