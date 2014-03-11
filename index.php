@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -66,16 +66,26 @@ if( is_admin() ) {
 			$taxonomy = 'category';
 			// Add filter to change the default taxonomy
 			$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
-			$dropdown_options = array(
-				'taxonomy'        => $taxonomy,
-				'name'            => $taxonomy,
-				'show_option_all' => __( 'View all categories' ),
-				'hide_empty'      => false,
-				'hierarchical'    => true,
-				'orderby'         => 'name',
-				'walker'          => new wpmediacategory_walker_category_filter(),
-				'value'           => 'slug'
-			);
+			if ( $taxonomy != 'category' ) {
+				$dropdown_options = array(
+					'taxonomy'        => $taxonomy,
+					'name'            => $taxonomy,
+					'show_option_all' => __( 'View all categories' ),
+					'hide_empty'      => false,
+					'hierarchical'    => true,
+					'orderby'         => 'name',
+					'walker'          => new wpmediacategory_walker_category_filter(),
+					'value'           => 'slug'
+				);
+			} else {
+				$dropdown_options = array(
+					'taxonomy' => $taxonomy,
+					'show_option_all' => __( 'View all categories' ),
+					'hide_empty' => false,
+					'hierarchical' => true,
+					'orderby' => 'name'
+				);
+			}
 			wp_dropdown_categories( $dropdown_options );
 		}
 	}
