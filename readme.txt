@@ -69,7 +69,7 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 == Changelog ==
 
 = 1.4.7 =
-* New images are now added to the default category (if a default category exists). I most cases the default category is "Uncategorized".(http://wordpress.org/support/topic/new-images-arent-automatically-in-uncategorized)
+* [New images are now added to the default category (if a default category exists). I most cases the default category is "Uncategorized".](http://wordpress.org/support/topic/new-images-arent-automatically-in-uncategorized)
 
 = 1.4.6 =
 * fixed bug where in some rare cases the filter by category didn't work
