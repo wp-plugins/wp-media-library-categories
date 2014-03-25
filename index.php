@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.6
+ * Version: 1.4.7
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -29,6 +29,28 @@ add_action( 'init', 'wpmediacategory_init' );
 
 // load code that is only needed in the admin section
 if( is_admin() ) {
+
+	/** Handle default category of attachments without category */
+	function wpmediacategory_set_attachment_category( $post_ID ) {
+
+		// default taxonomy
+		$taxonomy = 'category';
+		// add filter to change the default taxonomy
+		$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
+
+		// if attachment already have categories, stop here
+		if( wp_get_object_terms( $post_ID, $taxonomy ) )
+			return;
+
+		// no, then get the default one
+		$post_category = array( get_option('default_category') );
+
+		// then set category if default category is set on writting page
+		if( $post_category )
+			wp_set_post_categories( $post_ID, $post_category );
+	}
+	add_action( 'add_attachment', 'wpmediacategory_set_attachment_category' );
+	add_action( 'edit_attachment', 'wpmediacategory_set_attachment_category' );
 
 	/** Custom walker for wp_dropdown_categories, based on https://gist.github.com/stephenh1988/2902509 */
 	class wpmediacategory_walker_category_filter extends Walker_CategoryDropdown{
@@ -228,7 +250,8 @@ if( is_admin() ) {
 		$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
 		return array_merge(
 			array(
-				'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/edit-tags.php?taxonomy=' . $taxonomy . '&amp;post_type=attachment">' . __('Categories') . '</a>'
+				'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/edit-tags.php?taxonomy=' . $taxonomy . '&amp;post_type=attachment">' . __('Categories') . '</a>',
+				'premium' => '<a href="http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp">' . __('Get Premium Version') . '</a>'
 			),
 			$links
 		);

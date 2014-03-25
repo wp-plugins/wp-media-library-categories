@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.8.1
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,9 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 3. Filter by category when inserting media [(premium version)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 == Changelog ==
+
+= 1.4.7 =
+* New images are now added to the default category (if a default category exists). I most cases the default category is "Uncategorized".(http://wordpress.org/support/topic/new-images-arent-automatically-in-uncategorized)
 
 = 1.4.6 =
 * fixed bug where in some rare cases the filter by category didn't work
