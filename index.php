@@ -3,10 +3,33 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.7
+ * Version: 1.4.8
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
+
+/** Custom update_count_callback */
+function wpmediacategory_update_count_callback( $terms, $taxonomy ) {
+	global $wpdb;
+
+	// default taxonomy
+	$taxonomy = 'category';
+	// add filter to change the default taxonomy
+	$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
+
+	// select id & count from taxonomy
+	$rsCount = $wpdb->get_results("SELECT term_taxonomy_id, MAX(total) AS total FROM ((
+	SELECT tt.term_taxonomy_id, COUNT(*) AS total FROM $wpdb->term_relationships tr, $wpdb->term_taxonomy tt WHERE tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = '" . $taxonomy . "' GROUP BY tt.term_taxonomy_id
+	) UNION ALL (
+	SELECT term_taxonomy_id, 0 AS total FROM $wpdb->term_taxonomy WHERE taxonomy = '" . $taxonomy . "'
+	)) AS unioncount GROUP BY term_taxonomy_id");
+	// update all count values from taxonomy
+	foreach ( $rsCount as $rowCount ) {
+		$wpdb->update( $wpdb->term_taxonomy, array( 'count' => $rowCount->total ), array( 'term_taxonomy_id' => $rowCount->term_taxonomy_id ) );
+	}
+
+}
+
 
 /** register taxonomy for attachments */
 function wpmediacategory_init() {
@@ -18,7 +41,8 @@ function wpmediacategory_init() {
 	if ( $taxonomy != 'category' ) {
 		$args = array(
 			'hierarchical' => true,  // hierarchical: true = display as categories, false = display as tags
-			'show_admin_column' => true
+			'show_admin_column' => true,
+			'update_count_callback' => 'wpmediacategory_update_count_callback'
 		);
 		register_taxonomy( $taxonomy, array( 'attachment' ), $args );
 	} else {
@@ -27,8 +51,28 @@ function wpmediacategory_init() {
 }
 add_action( 'init', 'wpmediacategory_init' );
 
+
+/** change default update_count_callback for category taxonomy */
+function wpmediacategory_change_category_update_count_callback() {
+	global $wp_taxonomies;
+
+	// Default taxonomy
+	$taxonomy = 'category';
+	// Add filter to change the default taxonomy
+	$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
+
+	if ( $taxonomy == 'category' ) {
+		if ( ! taxonomy_exists( 'category' ) )
+			return false;
+
+		$new_arg = &$wp_taxonomies['category']->update_count_callback;
+		$new_arg = 'wpmediacategory_update_count_callback';
+	}
+}
+add_action( 'init', 'wpmediacategory_change_category_update_count_callback', 100 );
+
 // load code that is only needed in the admin section
-if( is_admin() ) {
+if ( is_admin() ) {
 
 	/** Handle default category of attachments without category */
 	function wpmediacategory_set_attachment_category( $post_ID ) {
@@ -39,18 +83,19 @@ if( is_admin() ) {
 		$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
 
 		// if attachment already have categories, stop here
-		if( wp_get_object_terms( $post_ID, $taxonomy ) )
+		if ( wp_get_object_terms( $post_ID, $taxonomy ) )
 			return;
 
 		// no, then get the default one
 		$post_category = array( get_option('default_category') );
 
 		// then set category if default category is set on writting page
-		if( $post_category )
+		if ( $post_category )
 			wp_set_post_categories( $post_ID, $post_category );
 	}
 	add_action( 'add_attachment', 'wpmediacategory_set_attachment_category' );
 	add_action( 'edit_attachment', 'wpmediacategory_set_attachment_category' );
+
 
 	/** Custom walker for wp_dropdown_categories, based on https://gist.github.com/stephenh1988/2902509 */
 	class wpmediacategory_walker_category_filter extends Walker_CategoryDropdown{
@@ -96,16 +141,20 @@ if( is_admin() ) {
 					'hide_empty'      => false,
 					'hierarchical'    => true,
 					'orderby'         => 'name',
+					'show_count'      => true,
 					'walker'          => new wpmediacategory_walker_category_filter(),
 					'value'           => 'slug'
 				);
 			} else {
 				$dropdown_options = array(
-					'taxonomy' => $taxonomy,
+					'taxonomy'        => $taxonomy,
 					'show_option_all' => __( 'View all categories' ),
-					'hide_empty' => false,
-					'hierarchical' => true,
-					'orderby' => 'name'
+					'hide_empty'      => false,
+					'hierarchical'    => true,
+					'orderby'         => 'name',
+					'show_count'      => false,
+					'walker'          => new wpmediacategory_walker_category_filter(),
+					'value'           => 'id'
 				);
 			}
 			wp_dropdown_categories( $dropdown_options );
@@ -224,6 +273,8 @@ if( is_admin() ) {
 
 			}
 		}
+
+		wpmediacategory_update_count_callback();
 
 		wp_redirect( $sendback );
 		exit();
