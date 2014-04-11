@@ -3,13 +3,13 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.8
+ * Version: 1.4.9
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
 
 /** Custom update_count_callback */
-function wpmediacategory_update_count_callback( $terms, $taxonomy ) {
+function wpmediacategory_update_count_callback( $terms = array(), $taxonomy = 'category' ) {
 	global $wpdb;
 
 	// default taxonomy
