@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.9.1
-Stable tag: 1.4.9
+Stable tag: 1.4.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 3. Filter by category when inserting media [(premium version)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 == Changelog ==
+
+= 1.4.10 =
+* Stay on active page in the media library when changing categories.
+* Fixed PHP 5.4 strict warning.
+* Added hierarchical display of the filter menu when inserting media. [(premium only)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 = 1.4.9 =
 * Fixed error message which in some cases appears when updating multiple items at once. [View support question](http://wordpress.org/support/topic/error-after-latest-update-3)

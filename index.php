@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.9
+ * Version: 1.4.10
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -100,15 +100,15 @@ if ( is_admin() ) {
 	/** Custom walker for wp_dropdown_categories, based on https://gist.github.com/stephenh1988/2902509 */
 	class wpmediacategory_walker_category_filter extends Walker_CategoryDropdown{
 
-		function start_el(&$output, $category, $depth, $args) {
-			$pad = str_repeat('&nbsp;', $depth * 3);
-			$cat_name = apply_filters('list_cats', $category->name, $category);
+		function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
+			$pad = str_repeat( '&nbsp;', $depth * 3 );
+			$cat_name = apply_filters( 'list_cats', $category->name, $category );
 
 			if( !isset($args['value']) ) {
 				$args['value'] = ( $category->taxonomy != 'category' ? 'slug' : 'id' );
 			}
 
-			$value = ($args['value']=='slug' ? $category->slug : $category->term_id );
+			$value = ( $args['value']=='slug' ? $category->slug : $category->term_id );
 
 			$output .= "\t<option class=\"level-$depth\" value=\"".$value."\"";
 			if ( $value === (string) $args['selected'] ) {
@@ -224,8 +224,9 @@ if ( is_admin() ) {
 
 		$sendback = admin_url( "upload.php?editCategory=1" );
 
-		//$pagenum = $wp_list_table->get_pagenum();
-		//$sendback = add_query_arg( 'paged', $pagenum, $sendback );
+		// remember pagenumber
+		$pagenum = isset( $_REQUEST['paged'] ) ? absint( $_REQUEST['paged'] ) : 0;
+		$sendback = add_query_arg( 'paged', $pagenum, $sendback );
 
 		foreach( $post_ids as $post_id ) {
 
