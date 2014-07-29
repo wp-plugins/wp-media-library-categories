@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.10
+ * Version: 1.4.11
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -227,6 +227,17 @@ if ( is_admin() ) {
 		// remember pagenumber
 		$pagenum = isset( $_REQUEST['paged'] ) ? absint( $_REQUEST['paged'] ) : 0;
 		$sendback = add_query_arg( 'paged', $pagenum, $sendback );
+
+		// remember orderby
+		if ( isset( $_REQUEST['orderby'] ) ) {
+			$sOrderby = $_REQUEST['orderby'];
+			$sendback = add_query_arg( 'orderby', $sOrderby, $sendback );
+		}
+		// remember order
+		if ( isset( $_REQUEST['order'] ) ) {
+			$sOrder = $_REQUEST['order'];
+			$sendback = add_query_arg( 'order', $sOrder, $sendback );
+		}
 
 		foreach( $post_ids as $post_id ) {
 

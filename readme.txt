@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary
 Requires at least: 3.1
 Tested up to: 3.9.1
-Stable tag: 1.4.10
+Stable tag: 1.4.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,17 +40,6 @@ To upload the plugin through WordPress, instead of FTP:
 
 == Frequently Asked Questions ==
 
-= Where can I request new features? =
-
-You can request new features on the [support page](http://wordpress.org/support/plugin/wp-media-library-categories)
-
-= I want to thank you, where can I make a donation? =
-Maintaining a plugin and keeping it up to date is hard work. Please support me by making a donation. Thank you.
-[Please donate here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
-
-= How can I filter on categories when inserting media into a post or page? =
-This feature is only available in the [premium version](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
-
 = By default the WordPress Media Library uses the same categories as WordPress does (such as in posts & pages). How do I use separate categories for the WordPress Media Library? =
 Add this code to the file functions.php located in your theme or child-theme:
 `/**
@@ -60,6 +49,15 @@ Add this code to the file functions.php located in your theme or child-theme:
 add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 1 ); //requires PHP 5.3 or newer
 `
 
+
+= How can I filter on categories when inserting media into a post or page? =
+This feature is only available in the [premium version](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
+
+
+= I want to thank you, where can I make a donation? =
+Maintaining a plugin and keeping it up to date is hard work. Please support me by making a donation. Thank you.
+[Please donate here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2)
+
 == Screenshots ==
 
 1. Filter by category in the media library
@@ -67,6 +65,9 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 3. Filter by category when inserting media [(premium version)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 == Changelog ==
+
+= 1.4.11 =
+* Remember ordering when changing categories.
 
 = 1.4.10 =
 * Stay on active page in the media library when changing categories.
