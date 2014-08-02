@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: jeffrey-wp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2
-Tags: category, categories, media, library, medialibrary
+Tags: category, categories, media, library, medialibrary, image, images, media category, media categories
 Requires at least: 3.1
 Tested up to: 3.9.1
 Stable tag: 1.4.11
