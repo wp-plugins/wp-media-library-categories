@@ -50,7 +50,7 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 `
 
 
-= Can i use category in the `[gallery]` shortcode, like `[gallery category="my-category-slug"]`? =
+= Can i use category in the [gallery] shortcode, like [gallery category="my-category-slug"]? =
 Yes, it is possible to extend the existing WordPress default `[gallery]` to only show images from one category by adding the `'category'` parameter. 
 The value passed to the `'category'` parameter can be either the `category slug`, or the `term_id`.
 `[gallery category="my-category-slug"]
