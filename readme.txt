@@ -3,8 +3,8 @@ Contributors: jeffrey-wp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SSNQMST6R28Q2
 Tags: category, categories, media, library, medialibrary, image, images, media category, media categories
 Requires at least: 3.1
-Tested up to: 3.9.1
-Stable tag: 1.4.11
+Tested up to: 3.9.2
+Stable tag: 1.4.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,17 @@ add_filter( 'wpmediacategory_taxonomy', function(){ return 'category_media'; }, 
 `
 
 
+= Can i use category in the `[gallery]` shortcode, like `[gallery category="my-category-slug"]`? =
+Yes, it is possible to extend the existing WordPress default `[gallery]` to only show images from one category by adding the `'category'` parameter. 
+The value passed to the `'category'` parameter can be either the `category slug`, or the `term_id`.
+`[gallery category="my-category-slug"]
+OR
+[gallery category="14"]`
+Aside from this behavior, the `[gallery]` shortcode works as it does by default with the built-in shortcode.
+If you use an incorrect slug by default WordPress shows the images that are attached to the page / post that is displayed. If you use an incorrect term_id no images are shown.
+For more information on using the built-in [gallery shortcode checkout the codex page](http://codex.wordpress.org/Gallery_Shortcode).
+
+
 = How can I filter on categories when inserting media into a post or page? =
 This feature is only available in the [premium version](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
@@ -65,6 +76,10 @@ Maintaining a plugin and keeping it up to date is hard work. Please support me b
 3. Filter by category when inserting media [(premium version)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 == Changelog ==
+
+= 1.4.12 =
+* Add category option to the default WordPress shortcode gallery [Read the FAQ for howto](http://wordpress.org/plugins/wp-media-library-categories/faq/)
+* Improve code styling to match WordPress code standard even more strictly
 
 = 1.4.11 =
 * Remember ordering when changing categories.

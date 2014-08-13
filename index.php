@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.11
+ * Version: 1.4.12
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -18,11 +18,11 @@ function wpmediacategory_update_count_callback( $terms = array(), $taxonomy = 'c
 	$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
 
 	// select id & count from taxonomy
-	$rsCount = $wpdb->get_results("SELECT term_taxonomy_id, MAX(total) AS total FROM ((
+	$rsCount = $wpdb->get_results( "SELECT term_taxonomy_id, MAX(total) AS total FROM ((
 	SELECT tt.term_taxonomy_id, COUNT(*) AS total FROM $wpdb->term_relationships tr, $wpdb->term_taxonomy tt WHERE tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = '" . $taxonomy . "' GROUP BY tt.term_taxonomy_id
 	) UNION ALL (
 	SELECT term_taxonomy_id, 0 AS total FROM $wpdb->term_taxonomy WHERE taxonomy = '" . $taxonomy . "'
-	)) AS unioncount GROUP BY term_taxonomy_id");
+	)) AS unioncount GROUP BY term_taxonomy_id" );
 	// update all count values from taxonomy
 	foreach ( $rsCount as $rowCount ) {
 		$wpdb->update( $wpdb->term_taxonomy, array( 'count' => $rowCount->total ), array( 'term_taxonomy_id' => $rowCount->term_taxonomy_id ) );
@@ -40,8 +40,8 @@ function wpmediacategory_init() {
 
 	if ( $taxonomy != 'category' ) {
 		$args = array(
-			'hierarchical' => true,  // hierarchical: true = display as categories, false = display as tags
-			'show_admin_column' => true,
+			'hierarchical'          => true,  // hierarchical: true = display as categories, false = display as tags
+			'show_admin_column'     => true,
 			'update_count_callback' => 'wpmediacategory_update_count_callback'
 		);
 		register_taxonomy( $taxonomy, array( 'attachment' ), $args );
@@ -70,6 +70,108 @@ function wpmediacategory_change_category_update_count_callback() {
 	}
 }
 add_action( 'init', 'wpmediacategory_change_category_update_count_callback', 100 );
+
+
+/** custom gallery shortcode */
+add_shortcode( 'gallery', 'wpmediacategory_custom_gallery_shortcode' );
+function wpmediacategory_custom_gallery_shortcode( $atts ) {
+
+	if ( isset( $atts['category'] ) ) {
+
+		// Default taxonomy
+		$taxonomy = 'category';
+		// Add filter to change the default taxonomy
+		$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
+
+		$category = $atts['category'];
+
+		// category slug?
+		if ( ! is_numeric( $category ) ) {
+
+			if ( $taxonomy != 'category' ) {
+
+				$term = get_term_by( 'slug', $category, $taxonomy );
+				if ( false !== $term ) {
+					$category = $term->term_id;
+				} else {
+					// not existing category slug
+					$category = '';
+				}
+
+			} else {
+
+				$categoryObject = get_category_by_slug( $category );
+				if ( false !== $categoryObject ) {
+					$category = $categoryObject->term_id;
+				} else {
+					// not existing category slug
+					$category = '';
+				}
+			}
+
+		}
+
+		if ( $category != '' ) {
+
+			$ids_new = array();
+
+			if ( $taxonomy != 'category' ) {
+				
+				$args = array(
+					'post_type'   => 'attachment',
+					'numberposts' => -1,
+					'post_status' => null,
+					'tax_query'   => array(
+						array(
+							'taxonomy' => $taxonomy,
+							'field'    => 'id',
+							'terms'    => $category
+						)
+					)
+				);
+
+			} else {
+
+				$args = array(
+					'post_type'   => 'attachment',
+					'numberposts' => -1,
+					'post_status' => null,
+					'category'    => $category
+				);	
+
+			}
+			$attachments = get_posts( $args );
+
+			if ( ! empty( $attachments ) ) {
+
+				// ids attribute already present?
+				if ( isset( $atts['ids'] ) ) {
+					$ids_old = explode( ',', $atts['ids'] );
+					foreach ( $attachments as $attachment ) {
+						// preserve id if in the selected category
+						if ( in_array( $attachment->ID, $ids_old ) ) {
+							$ids_new[] = $attachment->ID;
+						}
+					}
+				} else {
+					foreach ( $attachments as $attachment ) {
+						$ids_new[] = $attachment->ID;
+					}
+				}
+
+				$atts['ids'] = $ids_new;
+			} else {
+				$atts['ids'] = -1; // don't display images if category is empty
+			}
+
+		}
+
+	}
+
+	// call the wordpress shortcode function
+	return gallery_shortcode( $atts );
+}
+
 
 // load code that is only needed in the admin section
 if ( is_admin() ) {
@@ -104,20 +206,20 @@ if ( is_admin() ) {
 			$pad = str_repeat( '&nbsp;', $depth * 3 );
 			$cat_name = apply_filters( 'list_cats', $category->name, $category );
 
-			if( !isset($args['value']) ) {
+			if( ! isset( $args['value'] ) ) {
 				$args['value'] = ( $category->taxonomy != 'category' ? 'slug' : 'id' );
 			}
 
 			$value = ( $args['value']=='slug' ? $category->slug : $category->term_id );
 
-			$output .= "\t<option class=\"level-$depth\" value=\"".$value."\"";
+			$output .= '<option class="level-' . $depth . '" value="' . $value . '"';
 			if ( $value === (string) $args['selected'] ) {
 				$output .= ' selected="selected"';
 			}
 			$output .= '>';
-			$output .= $pad.$cat_name;
+			$output .= $pad . $cat_name;
 			if ( $args['show_count'] )
-				$output .= '&nbsp;&nbsp;('. $category->count .')';
+				$output .= '&nbsp;&nbsp;(' . $category->count . ')';
 
 			$output .= "</option>\n";
 		}
@@ -180,14 +282,14 @@ if ( is_admin() ) {
 			// add categories
 			foreach ( $terms as $term ) {
 				$sTxtAdd = esc_js( __( 'Add' ) . ': ' . $term->name );
-				echo "jQuery('<option>').val('wpmediacategory_add_" . $term->term_taxonomy_id . "').text('". $sTxtAdd . "').appendTo('#wpmediacategory_optgroup1');";
-				echo "jQuery('<option>').val('wpmediacategory_add_" . $term->term_taxonomy_id . "').text('". $sTxtAdd . "').appendTo('#wpmediacategory_optgroup2');";
+				echo "jQuery('<option>').val('wpmediacategory_add_" . $term->term_taxonomy_id . "').text('" . $sTxtAdd . "').appendTo('#wpmediacategory_optgroup1');";
+				echo "jQuery('<option>').val('wpmediacategory_add_" . $term->term_taxonomy_id . "').text('" . $sTxtAdd . "').appendTo('#wpmediacategory_optgroup2');";
 			}
 			// remove categories
 			foreach ( $terms as $term ) {
 				$sTxtRemove = esc_js( __( 'Remove' ) . ': ' . $term->name );
-				echo "jQuery('<option>').val('wpmediacategory_remove_" . $term->term_taxonomy_id . "').text('". $sTxtRemove . "').appendTo('#wpmediacategory_optgroup1');";
-				echo "jQuery('<option>').val('wpmediacategory_remove_" . $term->term_taxonomy_id . "').text('". $sTxtRemove . "').appendTo('#wpmediacategory_optgroup2');";
+				echo "jQuery('<option>').val('wpmediacategory_remove_" . $term->term_taxonomy_id . "').text('" . $sTxtRemove . "').appendTo('#wpmediacategory_optgroup1');";
+				echo "jQuery('<option>').val('wpmediacategory_remove_" . $term->term_taxonomy_id . "').text('" . $sTxtRemove . "').appendTo('#wpmediacategory_optgroup2');";
 			}
 			// remove all categories
 			echo "jQuery('<option>').val('wpmediacategory_remove_0').text('" . esc_js(  __( 'Delete all' ) ) . "').appendTo('#wpmediacategory_optgroup1');";
@@ -204,23 +306,27 @@ if ( is_admin() ) {
 	function wpmediacategory_custom_bulk_action() {
 		global $wpdb;
 
-		if ( ! isset( $_REQUEST['action'] ) )
+		if ( ! isset( $_REQUEST['action'] ) ) {
 			return;
-
-		// is it a category?
-		$sAction = ($_REQUEST['action'] != -1) ? $_REQUEST['action'] : $_REQUEST['action2'];
-		if ( substr( $sAction, 0, 16 ) != 'wpmediacategory_' )
-			return;
-
-		// security check
-		check_admin_referer('bulk-media');
-
-		// make sure ids are submitted.  depending on the resource type, this may be 'media' or 'post'
-		if(isset($_REQUEST['media'])) {
-			$post_ids = array_map('intval', $_REQUEST['media']);
 		}
 
-		if(empty($post_ids)) return;
+		// is it a category?
+		$sAction = ( $_REQUEST['action'] != -1 ) ? $_REQUEST['action'] : $_REQUEST['action2'];
+		if ( substr( $sAction, 0, 16 ) != 'wpmediacategory_' ) {
+			return;
+		}
+
+		// security check
+		check_admin_referer( 'bulk-media' );
+
+		// make sure ids are submitted.  depending on the resource type, this may be 'media' or 'post'
+		if( isset( $_REQUEST['media'] ) ) {
+			$post_ids = array_map( 'intval', $_REQUEST['media'] );
+		}
+
+		if( empty( $post_ids ) ) {
+			return;
+		}
 
 		$sendback = admin_url( "upload.php?editCategory=1" );
 
@@ -241,13 +347,13 @@ if ( is_admin() ) {
 
 		foreach( $post_ids as $post_id ) {
 
-			if ( is_numeric( str_replace('wpmediacategory_add_', '', $sAction) ) ) {
-				$nCategory = str_replace('wpmediacategory_add_', '', $sAction);
+			if ( is_numeric( str_replace( 'wpmediacategory_add_', '', $sAction ) ) ) {
+				$nCategory = str_replace( 'wpmediacategory_add_', '', $sAction );
 
 				// update or insert category
 				$wpdb->replace( $wpdb->term_relationships,
 					array(
-						'object_id' => $post_id,
+						'object_id'        => $post_id,
 						'term_taxonomy_id' => $nCategory
 					),
 					array(
@@ -256,11 +362,11 @@ if ( is_admin() ) {
 					)
 				);
 
-			} else if ( is_numeric( str_replace('wpmediacategory_remove_', '', $sAction) ) ) {
-				$nCategory = str_replace('wpmediacategory_remove_', '', $sAction);
+			} else if ( is_numeric( str_replace( 'wpmediacategory_remove_', '', $sAction ) ) ) {
+				$nCategory = str_replace( 'wpmediacategory_remove_', '', $sAction );
 
 				// remove all categories
-				if ($nCategory == 0) {
+				if ( $nCategory == 0 ) {
 					$wpdb->delete( $wpdb->term_relationships,
 						array(
 							'object_id' => $post_id
@@ -273,7 +379,7 @@ if ( is_admin() ) {
 				} else {
 					$wpdb->delete( $wpdb->term_relationships,
 						array(
-							'object_id' => $post_id,
+							'object_id'        => $post_id,
 							'term_taxonomy_id' => $nCategory
 						),
 						array(
@@ -298,8 +404,8 @@ if ( is_admin() ) {
 	function wpmediacategory_custom_bulk_admin_notices() {
 		global $post_type, $pagenow;
 
-		if($pagenow == 'upload.php' && $post_type == 'attachment' && isset($_GET['editCategory'])) {
-			echo '<div class="updated"><p>' . __('Settings saved.') . '</p></div>';
+		if( $pagenow == 'upload.php' && $post_type == 'attachment' && isset( $_GET['editCategory'] ) ) {
+			echo '<div class="updated"><p>' . __( 'Settings saved.' ) . '</p></div>';
 		}
 	}
 	add_action( 'admin_notices', 'wpmediacategory_custom_bulk_admin_notices' );
@@ -313,8 +419,8 @@ if ( is_admin() ) {
 		$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
 		return array_merge(
 			array(
-				'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/edit-tags.php?taxonomy=' . $taxonomy . '&amp;post_type=attachment">' . __('Categories') . '</a>',
-				'premium' => '<a href="http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp">' . __('Get Premium Version') . '</a>'
+				'settings' => '<a href="' . get_bloginfo( 'wpurl' ) . '/wp-admin/edit-tags.php?taxonomy=' . $taxonomy . '&amp;post_type=attachment">' . __( 'Categories' ) . '</a>',
+				'premium' => '<a href="http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp">' . __( 'Get Premium Version' ) . '</a>'
 			),
 			$links
 		);
