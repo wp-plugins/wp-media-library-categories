@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.12
+ * Version: 1.4.13
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -73,10 +73,9 @@ add_action( 'init', 'wpmediacategory_change_category_update_count_callback', 100
 
 
 /** custom gallery shortcode */
-add_shortcode( 'gallery', 'wpmediacategory_custom_gallery_shortcode' );
-function wpmediacategory_custom_gallery_shortcode( $atts ) {
+function wpmediacategory_gallery_atts( $result, $defaults, $atts ) {
 
-	if ( isset( $atts['category'] ) ) {
+    if ( isset( $atts['category'] ) ) {
 
 		// Default taxonomy
 		$taxonomy = 'category';
@@ -116,7 +115,7 @@ function wpmediacategory_custom_gallery_shortcode( $atts ) {
 			$ids_new = array();
 
 			if ( $taxonomy != 'category' ) {
-				
+
 				$args = array(
 					'post_type'   => 'attachment',
 					'numberposts' => -1,
@@ -137,7 +136,7 @@ function wpmediacategory_custom_gallery_shortcode( $atts ) {
 					'numberposts' => -1,
 					'post_status' => null,
 					'category'    => $category
-				);	
+				);
 
 			}
 			$attachments = get_posts( $args );
@@ -166,11 +165,15 @@ function wpmediacategory_custom_gallery_shortcode( $atts ) {
 
 		}
 
+		$result['include'] = implode( ',', $atts['ids'] );
+		$result['category'] = $atts['category'];
+
 	}
 
-	// call the wordpress shortcode function
-	return gallery_shortcode( $atts );
+	return $result;
+ 
 }
+add_filter( 'shortcode_atts_gallery', 'wpmediacategory_gallery_atts', 10, 3 );
 
 
 // load code that is only needed in the admin section
@@ -343,6 +346,11 @@ if ( is_admin() ) {
 		if ( isset( $_REQUEST['order'] ) ) {
 			$sOrder = $_REQUEST['order'];
 			$sendback = add_query_arg( 'order', $sOrder, $sendback );
+		}
+		// remember author
+		if ( isset( $_REQUEST['author'] ) ) {
+			$sOrderby = $_REQUEST['author'];
+			$sendback = add_query_arg( 'author', $sOrderby, $sendback );
 		}
 
 		foreach( $post_ids as $post_id ) {
