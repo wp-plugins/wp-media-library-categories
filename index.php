@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.13
+ * Version: 1.4.14
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -18,16 +18,16 @@ function wpmediacategory_update_count_callback( $terms = array(), $taxonomy = 'c
 	$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
 
 	// select id & count from taxonomy
-	$rsCount = $wpdb->get_results( "SELECT term_taxonomy_id, MAX(total) AS total FROM ((
-	SELECT tt.term_taxonomy_id, COUNT(*) AS total FROM $wpdb->term_relationships tr, $wpdb->term_taxonomy tt WHERE tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = '" . $taxonomy . "' GROUP BY tt.term_taxonomy_id
+	$query = "SELECT term_taxonomy_id, MAX(total) AS total FROM ((
+	SELECT tt.term_taxonomy_id, COUNT(*) AS total FROM $wpdb->term_relationships tr, $wpdb->term_taxonomy tt WHERE tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = %s GROUP BY tt.term_taxonomy_id
 	) UNION ALL (
-	SELECT term_taxonomy_id, 0 AS total FROM $wpdb->term_taxonomy WHERE taxonomy = '" . $taxonomy . "'
-	)) AS unioncount GROUP BY term_taxonomy_id" );
+	SELECT term_taxonomy_id, 0 AS total FROM $wpdb->term_taxonomy WHERE taxonomy = %s
+	)) AS unioncount GROUP BY term_taxonomy_id";
+	$rsCount = $wpdb->get_results( $wpdb->prepare( $query, $taxonomy, $taxonomy ) );
 	// update all count values from taxonomy
 	foreach ( $rsCount as $rowCount ) {
 		$wpdb->update( $wpdb->term_taxonomy, array( 'count' => $rowCount->total ), array( 'term_taxonomy_id' => $rowCount->term_taxonomy_id ) );
 	}
-
 }
 
 
@@ -232,8 +232,8 @@ if ( is_admin() ) {
 
 	/** Add a category filter */
 	function wpmediacategory_add_category_filter() {
-		$screen = get_current_screen();
-		if ( 'upload' == $screen->id ) {
+		global $pagenow;
+		if ( 'upload.php' == $pagenow ) {
 			// Default taxonomy
 			$taxonomy = 'category';
 			// Add filter to change the default taxonomy
@@ -278,7 +278,7 @@ if ( is_admin() ) {
 		if ( $terms && ! is_wp_error( $terms ) ) :
 
 			echo '<script type="text/javascript">';
-			echo 'jQuery(document).ready(function() {';
+			echo 'jQuery(window).load(function() {';
 			echo 'jQuery(\'<optgroup id="wpmediacategory_optgroup1" label="' .  html_entity_decode( __( 'Categories' ), ENT_QUOTES, 'UTF-8' ) . '">\').appendTo("select[name=\'action\']");';
 			echo 'jQuery(\'<optgroup id="wpmediacategory_optgroup2" label="' .  html_entity_decode( __( 'Categories' ), ENT_QUOTES, 'UTF-8' ) . '">\').appendTo("select[name=\'action2\']");';
 
@@ -434,5 +434,120 @@ if ( is_admin() ) {
 		);
 	}
 	add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wpmediacategory_add_plugin_action_links' );
+
+
+	/** Changing categories in the 'grid view' */
+	function wpmediacategory_ajax_query_attachments() {
+
+		if ( ! current_user_can( 'upload_files' ) ) {
+			wp_send_json_error();
+		}
+
+		$taxonomies = get_object_taxonomies( 'attachment', 'names' );
+
+		$query = isset( $_REQUEST['query'] ) ? (array) $_REQUEST['query'] : array();
+
+		$defaults = array(
+			's', 'order', 'orderby', 'posts_per_page', 'paged', 'post_mime_type',
+			'post_parent', 'post__in', 'post__not_in'
+		);
+		$query = array_intersect_key( $query, array_flip( array_merge( $defaults, $taxonomies ) ) );
+
+		$query['post_type'] = 'attachment';
+		$query['post_status'] = 'inherit';
+		if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) )
+			$query['post_status'] .= ',private';
+			
+		$query['tax_query'] = array( 'relation' => 'AND' );
+
+		foreach ( $taxonomies as $taxonomy ) {				
+			if ( isset( $query[$taxonomy] ) && is_numeric( $query[$taxonomy] ) ) {
+				array_push( $query['tax_query'], array(
+					'taxonomy' => $taxonomy,
+					'field'    => 'id',
+					'terms'    => $query[$taxonomy]
+				));	
+			}
+			unset ( $query[$taxonomy] );
+		}
+
+		$query = apply_filters( 'ajax_query_attachments_args', $query );
+		$query = new WP_Query( $query );
+
+		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
+		$posts = array_filter( $posts );
+
+		wp_send_json_success( $posts );
+	}
+	add_action( 'wp_ajax_query-attachments', 'wpmediacategory_ajax_query_attachments', 0 );
+
+
+	/** Enqueue admin scripts and styles */
+	function wpmediacategory_enqueue_media_action() {
+		if ( wp_script_is( 'media-editor' ) ) {
+
+			// Default taxonomy
+			$taxonomy = 'category';
+			// Add filter to change the default taxonomy
+			$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
+
+			if ( $taxonomy != 'category' ) {
+				$dropdown_options = array(
+					'taxonomy'        => $taxonomy,
+					'hide_empty'      => false,
+					'hierarchical'    => true,
+					'orderby'         => 'name',
+					'show_count'      => true,
+					'walker'          => new wpmediacategory_walker_category_mediagridfilter(),
+					'value'           => 'id',
+					'echo'            => false
+				);
+			} else {
+				$dropdown_options = array(
+					'taxonomy'        => $taxonomy,
+					'hide_empty'      => false,
+					'hierarchical'    => true,
+					'orderby'         => 'name',
+					'show_count'      => false,
+					'walker'          => new wpmediacategory_walker_category_mediagridfilter(),
+					'value'           => 'id',
+					'echo'            => false
+				);
+			}
+			$attachment_terms = wp_dropdown_categories( $dropdown_options );
+			$attachment_terms = preg_replace( array( "/<select([^>]*)>/", "/<\/select>/" ), "", $attachment_terms );
+
+			echo '<script type="text/javascript">';
+			echo '/* <![CDATA[ */';
+			echo 'var wpmediacategory_taxonomies = {"' . $taxonomy . '":{"list_title":"' . html_entity_decode( __( 'View all categories' ), ENT_QUOTES, 'UTF-8' ) . '","term_list":[' . substr( $attachment_terms, 2 ) . ']}};';
+			echo '/* ]]> */';
+			echo '</script>';
+
+			wp_enqueue_script( 'wpmediacategory-media-views', plugins_url( 'js/wpmediacategory-media-views.min.js', __FILE__ ), array( 'media-views' ), '1.4.14', true );
+		}
+	}
+	add_action( 'admin_enqueue_scripts', 'wpmediacategory_enqueue_media_action' );
+
+
+	/** Custom walker for wp_dropdown_categories for media grid view filter */
+	class wpmediacategory_walker_category_mediagridfilter extends Walker_CategoryDropdown {
+
+		function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
+			$pad = str_repeat( '&nbsp;', $depth * 3 );
+
+			$cat_name = apply_filters( 'list_cats', $category->name, $category );
+
+			// {"term_id":"1","term_name":"no category"}
+			$output .= ',{"term_id":"' . $category->term_id . '",';
+
+			$output .= '"term_name":"' . $pad . esc_attr( $cat_name );
+			if ( $args['show_count'] ) {
+				$output .= '&nbsp;&nbsp;('. $category->count .')';
+			}
+			$output .= '"}';
+		}
+
+	}
+
 }
 ?>
