@@ -80,9 +80,9 @@ Maintaining a plugin and keeping it up to date is hard work. Please support me b
 
 = 1.4.14 =
 * Support for WordPress 4.0
-* Added categories filter to media grid view
-* Security enhancement
-* Resolved conflict with UberMenu plugin
+* Added categories filter to media grid view.
+* Security enhancement.
+* Resolved conflict with UberMenu plugin.
 
 = 1.4.13 =
 * Improved compatibility with other plugins that use the [gallery] shortcode.
