@@ -412,7 +412,7 @@ if ( is_admin() ) {
 	function wpmediacategory_custom_bulk_admin_notices() {
 		global $post_type, $pagenow;
 
-		if( $pagenow == 'upload.php' && $post_type == 'attachment' && isset( $_GET['editCategory'] ) ) {
+		if ( $pagenow == 'upload.php' && $post_type == 'attachment' && isset( $_GET['editCategory'] ) ) {
 			echo '<div class="updated"><p>' . __( 'Settings saved.' ) . '</p></div>';
 		}
 	}
@@ -484,7 +484,8 @@ if ( is_admin() ) {
 
 	/** Enqueue admin scripts and styles */
 	function wpmediacategory_enqueue_media_action() {
-		if ( wp_script_is( 'media-editor' ) ) {
+		global $pagenow;
+		if ( wp_script_is( 'media-editor' ) && 'upload.php' == $pagenow ) {
 
 			// Default taxonomy
 			$taxonomy = 'category';
