@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary, image, images, media category, media categories
 Requires at least: 3.1
 Tested up to: 4.0
-Stable tag: 1.4.14
+Stable tag: 1.4.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,7 +78,7 @@ Maintaining a plugin and keeping it up to date is hard work. Please support me b
 
 == Changelog ==
 
-= 1.4.14 =
+= 1.4.15 =
 * Support for WordPress 4.0
 * Added categories filter to media grid view.
 * Security enhancement.
