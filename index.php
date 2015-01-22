@@ -3,7 +3,7 @@
  * Plugin Name: Media Library Categories
  * Plugin URI: http://wordpress.org/plugins/wp-media-library-categories/
  * Description: Adds the ability to use categories in the media library.
- * Version: 1.4.15
+ * Version: 1.5.0
  * Author: Jeffrey-WP
  * Author URI: http://codecanyon.net/user/jeffrey-wp/?ref=jeffrey-wp
  */
@@ -484,6 +484,7 @@ if ( is_admin() ) {
 
 	/** Enqueue admin scripts and styles */
 	function wpmediacategory_enqueue_media_action() {
+
 		global $pagenow;
 		if ( wp_script_is( 'media-editor' ) && 'upload.php' == $pagenow ) {
 
@@ -524,8 +525,9 @@ if ( is_admin() ) {
 			echo '/* ]]> */';
 			echo '</script>';
 
-			wp_enqueue_script( 'wpmediacategory-media-views', plugins_url( 'js/wpmediacategory-media-views.min.js', __FILE__ ), array( 'media-views' ), '1.4.15', true );
+			wp_enqueue_script( 'wpmediacategory-media-views', plugins_url( 'js/wpmediacategory-media-views.min.js', __FILE__ ), array( 'media-views' ), '1.5.0', true );
 		}
+		wp_enqueue_style( 'wpmediacategory', plugins_url( 'css/wpmediacategory.min.css', __FILE__ ), array(), '1.5.0' );
 	}
 	add_action( 'admin_enqueue_scripts', 'wpmediacategory_enqueue_media_action' );
 
@@ -548,6 +550,157 @@ if ( is_admin() ) {
 			$output .= '"}';
 		}
 
+	}
+
+
+	/** Save categories from attachment details on insert media popup */
+	function wpmediacategory_save_attachment_compat() {
+
+		if ( ! isset( $_REQUEST['id'] ) ) {
+			wp_send_json_error();
+		}
+
+		if ( ! $id = absint( $_REQUEST['id'] ) ) {
+			wp_send_json_error();
+		}
+
+		if ( empty( $_REQUEST['attachments'] ) || empty( $_REQUEST['attachments'][ $id ] ) ) {
+			wp_send_json_error();
+		}
+		$attachment_data = $_REQUEST['attachments'][ $id ];
+
+		check_ajax_referer( 'update-post_' . $id, 'nonce' );
+
+		if ( ! current_user_can( 'edit_post', $id ) ) {
+			wp_send_json_error();
+		}
+
+		$post = get_post( $id, ARRAY_A );
+
+		if ( 'attachment' != $post['post_type'] ) {
+			wp_send_json_error();
+		}
+
+		/** This filter is documented in wp-admin/includes/media.php */
+		$post = apply_filters( 'attachment_fields_to_save', $post, $attachment_data );
+
+		if ( isset( $post['errors'] ) ) {
+			$errors = $post['errors']; // @todo return me and display me!
+			unset( $post['errors'] );
+		}
+
+		wp_update_post( $post );
+
+		foreach ( get_attachment_taxonomies( $post ) as $taxonomy ) {		
+			if ( isset( $attachment_data[ $taxonomy ] ) ) {
+				wp_set_object_terms( $id, array_map( 'trim', preg_split( '/,+/', $attachment_data[ $taxonomy ] ) ), $taxonomy, false );
+			} else if ( isset($_REQUEST['tax_input']) && isset( $_REQUEST['tax_input'][ $taxonomy ] ) ) {
+				wp_set_object_terms( $id, $_REQUEST['tax_input'][ $taxonomy ], $taxonomy, false );
+			} else {
+				wp_set_object_terms( $id, '', $taxonomy, false );
+			}
+		}
+
+		if ( ! $attachment = wp_prepare_attachment_for_js( $id ) ) {
+			wp_send_json_error();
+		}
+		
+		wp_send_json_success( $attachment );
+	}
+	add_action( 'wp_ajax_save-attachment-compat', 'wpmediacategory_save_attachment_compat', 0 );
+
+
+	/** Add category checkboxes to attachment details on insert media popup */
+	function wpmediacategory_attachment_fields_to_edit( $form_fields, $post ) {	
+		
+		foreach ( get_attachment_taxonomies( $post->ID ) as $taxonomy ) {
+			$terms = get_object_term_cache( $post->ID, $taxonomy );
+			
+			$t = (array)get_taxonomy( $taxonomy );
+			if ( ! $t['public'] || ! $t['show_ui'] ) {
+				continue;
+			}
+			if ( empty($t['label']) ) {
+				$t['label'] = $taxonomy;
+			}
+			if ( empty($t['args']) ) {
+				$t['args'] = array();
+			}
+			
+			if ( false === $terms ) {
+				$terms = wp_get_object_terms($post->ID, $taxonomy, $t['args']);
+			}
+				
+			$values = array();
+		
+			foreach ( $terms as $term ) {
+				$values[] = $term->slug;
+			}
+				
+			$t['value'] = join(', ', $values);
+			$t['show_in_edit'] = false;
+			
+			if ( $t['hierarchical'] ) {
+				ob_start();
+				
+					wp_terms_checklist( $post->ID, array( 'taxonomy' => $taxonomy, 'checked_ontop' => false, 'walker' => new wpmediacategory_walker_media_taxonomy_checklist() ) );
+					
+					if ( ob_get_contents() != false ) {
+						$html = '<ul class="term-list">' . ob_get_contents() . '</ul>';
+					} else {
+						$html = '<ul class="term-list"><li>No ' . $t['label'] . '</li></ul>';
+					}
+				
+				ob_end_clean();
+				
+				$t['input'] = 'html';
+				$t['html'] = $html; 
+			}
+		
+			$form_fields[$taxonomy] = $t;
+		}
+
+		return $form_fields;
+	}
+	add_filter( 'attachment_fields_to_edit', 'wpmediacategory_attachment_fields_to_edit', 10, 2 );
+
+
+	/** Custom walker for wp_dropdown_categories for media grid view filter */
+	class wpmediacategory_walker_media_taxonomy_checklist extends Walker {
+
+		var $tree_type = 'category';
+		var $db_fields = array(
+			'parent' => 'parent',
+			'id'     => 'term_id'
+		); 
+
+		function start_lvl( &$output, $depth = 0, $args = array() ) {
+			$indent = str_repeat( "\t", $depth );
+			$output .= "$indent<ul class='children'>\n";
+		}
+
+		function end_lvl( &$output, $depth = 0, $args = array() ) {
+			$indent = str_repeat("\t", $depth);
+			$output .= "$indent</ul>\n";
+		}
+
+		function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
+			extract( $args );
+			
+			// Default taxonomy
+			$taxonomy = 'category';
+			// Add filter to change the default taxonomy
+			$taxonomy = apply_filters( 'wpmediacategory_taxonomy', $taxonomy );
+
+			$name = 'tax_input[' . $taxonomy . ']';
+
+			$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
+			$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" . '<label class="selectit"><input value="' . $category->slug . '" type="checkbox" name="' . $name . '[' . $category->slug . ']" id="in-' . $taxonomy . '-' . $category->term_id . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
+		}
+
+		function end_el( &$output, $category, $depth = 0, $args = array() ) {
+			$output .= "</li>\n";
+		}
 	}
 
 }

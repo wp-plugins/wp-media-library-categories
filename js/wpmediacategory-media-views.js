@@ -60,7 +60,7 @@ window.wp = window.wp || {};
 						taxonomy: taxonomy, 
 						termList: values.term_list,
 						termListTitle: values.list_title,
-						className: 'attachment-'+taxonomy+'-filter'
+						className: 'wpmediacategory-filter attachment-'+taxonomy+'-filter'
 					}).render() );
 				}
 			});

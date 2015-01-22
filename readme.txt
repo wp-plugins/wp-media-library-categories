@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: category, categories, media, library, medialibrary, image, images, media category, media categories
 Requires at least: 3.1
 Tested up to: 4.1
-Stable tag: 1.4.15
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,11 +72,15 @@ Maintaining a plugin and keeping it up to date is hard work. Please support me b
 
 == Screenshots ==
 
-1. Filter by category in the media library
+1. Filter by category in the media library. Use bulk actions to add and remove categories of multiple images at once.
 2. Manage categories in the media library
 3. Filter by category when inserting media [(premium version)](http://codecanyon.net/item/media-library-categories-premium/6691290?ref=jeffrey-wp)
 
 == Changelog ==
+
+= 1.5 =
+* Support for WordPress 4.1
+* Add category checkboxes to attachment details on insert media popup
 
 = 1.4.15 =
 * Support for WordPress 4.0
